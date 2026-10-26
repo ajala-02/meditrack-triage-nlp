@@ -1,2 +1,0 @@
-[console_scripts]
-meditrack-triage = meditrack_triage.cli:main
