@@ -25,7 +25,7 @@
 
 The baseline looks excellent on validation and performs close to chance on unseen scenarios. For three balanced classes, random guessing gives a macro F1 of about 0.33.
 
-**What this means:** [TODO: after checking the split logic, explain the gap in one or two sentences, for example: "the model learned the phrasing of my synthetic templates, not the symptoms behind them, so it fails when the scenario changes."]
+**What this means:** Both validation and test contain scenarios excluded from training, but this small synthetic split is sensitive to which scenarios land in each set. The large gap suggests the baseline relies heavily on template-specific wording and does not generalise reliably to different symptom scenarios. On the held-out test set, it identified only 3 of 26 high-tier examples, so it is not suitable for any triage use.
 
 I kept this result and its error files instead of reporting only the favourable validation score.
 
@@ -39,7 +39,7 @@ Patients rarely describe symptoms in tidy clinical language. They use informal w
 2. How should we evaluate it, especially for the cases where a miss matters most?
 3. Where and why does it fail?
 
-It was built as the NLP component for [MediTrack](YOUR_MEDITRACK_REPO_LINK), my post-discharge patient monitoring app.
+It was built as the NLP component for [MediTrack](https://github.com/ajala-02/meditrack), my post-discharge patient monitoring app.
 
 ---
 
@@ -74,7 +74,7 @@ I prioritise **high-tier recall** because missing a serious case matters more th
 
 | Input | Predicted | Top probability | Comment |
 |---|---|---|---|
-| "my chest feels heavy" | high | 0.69 | Familiar wording, clear signal |
+| "my chest feels heavy" | high | 0.69 | Wording associated with high-tier training features |
 | "I feel off since this morning" | high | 0.36 | Probabilities almost uniform (0.36 / 0.32 / 0.32), so this is essentially a guess |
 
 A confident-looking label can hide an uncertain prediction. A natural next step is an "uncertain" outcome when the top probability falls below a threshold, flagged for human review.
@@ -83,9 +83,8 @@ A confident-looking label can hide an uncertain prediction. A natural next step 
 
 | Text | Actual | Predicted | Confidence | Category | Likely reason |
 |---|---|---|---|---|---|
-| [TODO] | [TODO] | [TODO] | [TODO] | [TODO] | [TODO] |
-| [TODO] | [TODO] | [TODO] | [TODO] | [TODO] | [TODO] |
-| [TODO] | [TODO] | [TODO] | [TODO] | [TODO] | [TODO] |
+| "My lips are swelling quickly and my throat feels tight after food." | high | low | 0.5502 | Unseen high-tier scenario | The held-out anaphylaxis scenario was absent from training. |
+| "Since this morning, I get short of breath walking upstairs, which is new for me. What should I do?" | medium | high | 0.4936 | Unseen medium-tier scenario | The model over-weighted "short of breath" without understanding the fuller context. |
 
 **Categories to label:** vague text · multiple symptoms · negation ("no vomiting") · typos and informal wording · mixed language · template overlap or gaps.
 
@@ -157,8 +156,7 @@ curl -X POST http://127.0.0.1:8000/predict \
 
 Returns a triage tier, class probabilities, confidence and a disclaimer. The service currently serves the **TF-IDF baseline**.
 
-<!-- TODO: add a screenshot of the /docs page and a /predict response here -->
-<!-- ![API docs](docs/api-docs.png) -->
+
 
 ---
 
@@ -188,10 +186,10 @@ See [`MODEL_CARD.md`](MODEL_CARD.md) for intended use, prohibited use and risk n
 - [ ] Run DistilBERT on the same held-out test split and fill in the comparison table
 - [ ] Add more varied, paraphrased and mixed-language data to test whether the generalisation gap closes
 - [ ] Add an "uncertain" outcome below a confidence threshold
-- [ ] Complete the labelled error-analysis table
+- [ ] Label more rows from `worst_errors.csv` in the error-analysis table
 
 ---
 
 ## 👤 Author
 
-**Ajala Nalawade**: [GitHub](YOUR_GITHUB_LINK) · [LinkedIn](YOUR_LINKEDIN_LINK)
+**Ajala Nalawade**: [GitHub](https://github.com/ajala-02)
