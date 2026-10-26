@@ -20,7 +20,7 @@
 
 | Split | Macro F1 | High-tier recall |
 |---|---|---|
-| Validation | 0.9111 | [add] |
+| Validation | 0.9111 | 0.9200 |
 | **Held-out test (unseen scenarios)** | **0.2928** | **0.1154** |
 
 The baseline looks excellent on validation and performs close to chance on unseen scenarios. For three balanced classes, random guessing gives a macro F1 of about 0.33.
